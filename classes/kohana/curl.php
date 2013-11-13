@@ -39,10 +39,11 @@ class Kohana_Curl {
     {
         return new Curl($config_entry);
     }
-    
+
     /**
      * Constructor
-     * @param   string|array  $config_entry name of config entry or options array (will be merged with default entry)   
+     * @param null $config
+     * @internal param array|string $config_entry name of config entry or options array (will be merged with default entry)
      */
     public function __construct($config = NULL)
     {
@@ -61,8 +62,7 @@ class Kohana_Curl {
             $config_entry = strval($config);
         }
          
-        
-        $config = Kohana::config('curl.'.$config_entry);
+        $config = Kohana::$config->load('curl.'.$config_entry);
         
         $this->instance = curl_init();
         
@@ -83,11 +83,28 @@ class Kohana_Curl {
      */
     public function set_opt($key, $value)
     {
+        if (is_array($value)) {
+            $value = $this->arrayToParams($value);
+        }
         curl_setopt($this->instance, $key, $value);
         
         return $this;
     }
-    
+
+    private function arrayToParams($data) {
+        if (is_array($data)) {
+            $str = '';
+
+            foreach ($data as $k => $v) {
+                $str .= $k.'='.$v.'&';
+            }
+
+            $data = $str;
+        }
+
+        return $data;
+    }
+
     /**
      * Set options from array
      * @param   array   $options    array of options
@@ -108,7 +125,6 @@ class Kohana_Curl {
     public function execute()
     {
         $result = curl_exec($this->instance);
-        
         //Wrap the error reporting in an exception
         if ($result === FALSE)
         { 
