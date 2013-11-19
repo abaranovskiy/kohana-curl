@@ -194,7 +194,7 @@ class Kohana_Curl {
      * @param   array   $curl_options   additional curl options to instantiate curl with
      * @return  string  result 
      */
-    public static function post($url, Array $data = array(), Array $headers = array(), $headers_only = FALSE, Array $curl_options = array())
+    public static function post($url, $data = array(), Array $headers = array(), $headers_only = FALSE, Array $curl_options = array())
     {
         $ch = Curl::factory($curl_options);
         
